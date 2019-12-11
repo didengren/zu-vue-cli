@@ -1,4 +1,4 @@
-# zu-vue-cli [![Latest Stable Version](https://img.shields.io/npm/v/zu-vue-cli.svg)](https://www.npmjs.com/package/zu-vue-cli)
+# zu-vue-cli [![Latest Stable Version](https://img.shields.io/npm/v/zu-vue-cli.svg)](https://www.npmjs.com/package/@trinasolar/zu-vue-cli)
 
 A simple CLI for creating your project
 
