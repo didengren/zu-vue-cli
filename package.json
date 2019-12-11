@@ -1,0 +1,28 @@
+{
+  "name": "zu-vue-cli",
+  "version": "1.0.0",
+  "description": "pc端基于vue的前端spa项目启动脚手架，集成了element-ui",
+  "main": "index.js",
+  "bin": {
+    "zu-vue": "bin/zu-vue",
+    "zu-vue-add": "bin/zu-vue-add",
+    "zu-vue-delete": "bin/zu-vue-delete",
+    "zu-vue-list": "bin/zu-vue-list",
+    "zu-vue-init": "bin/zu-vue-init"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "vue-cli"
+  ],
+  "author": "Sam Xu",
+  "license": "ISC",
+  "dependencies": {
+    "chalk": "^3.0.0",
+    "commander": "^4.0.1",
+    "download-git-repo": "^3.0.2",
+    "inquirer": "^7.0.0",
+    "ora": "^4.0.3"
+  }
+}
