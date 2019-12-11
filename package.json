@@ -17,7 +17,11 @@
     "vue-cli"
   ],
   "author": "Sam Xu",
-  "license": "ISC",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:didengren/zu-vue-cli.git"
+  },
   "dependencies": {
     "chalk": "^3.0.0",
     "commander": "^4.0.1",
