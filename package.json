@@ -1,7 +1,7 @@
 {
   "name": "zu-vue-cli",
-  "version": "1.0.2",
-  "description": "pc端基于vue的前端spa项目启动脚手架，集成了element-ui",
+  "version": "1.0.0",
+  "description": "pc端基于vue的前端spa项目启动脚手架，内部模板集成多个ui组件库可供选择",
   "main": "index.js",
   "bin": {
     "zu-vue": "bin/zu-vue",
