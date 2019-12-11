@@ -1,5 +1,5 @@
 {
-  "name": "zu-vue-cli",
+  "name": "@trinasolar/zu-vue-cli",
   "version": "1.0.0",
   "description": "pc端基于vue的前端spa项目启动脚手架，内部模板集成多个ui组件库可供选择",
   "main": "index.js",
@@ -20,7 +20,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git@github.com:didengren/zu-vue-cli.git"
+    "url": "git+ssh://git@github.com/didengren/zu-vue-cli.git"
   },
   "dependencies": {
     "chalk": "^3.0.0",
@@ -28,5 +28,10 @@
     "download-git-repo": "^3.0.2",
     "inquirer": "^7.0.0",
     "ora": "^4.0.3"
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/didengren/zu-vue-cli/issues"
+  },
+  "homepage": "https://github.com/didengren/zu-vue-cli#readme",
+  "devDependencies": {}
 }
