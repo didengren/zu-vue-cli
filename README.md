@@ -5,7 +5,7 @@ A simple CLI for creating your project
 ## Install
 
 ```shell
-$ npm install -g zu-vue-cli
+$ npm install -g @trinasolar/zu-vue-cli
 ```
 
 ## Usage
