@@ -27,7 +27,7 @@ if (!projectName) {
 
 let _url, url
 _url = tplObj[templateName]
-if (~tplObj[templateName].indexOf("http")) url = "direct:" + _url
+if (~tplObj[templateName].indexOf("://")) url = "direct:" + _url
 else url = _url
 
 console.log(chalk.white('\n Start generating... \n'))
