@@ -25,7 +25,10 @@ if (!projectName) {
   return
 }
 
-url = tplObj[templateName]
+let _url, url
+_url = tplObj[templateName]
+if (~tplObj[templateName].indexOf("http")) url = "direct:" + _url
+else url = _url
 
 console.log(chalk.white('\n Start generating... \n'))
 // 出现加载图标
