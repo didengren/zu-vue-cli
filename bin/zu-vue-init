@@ -25,10 +25,12 @@ if (!projectName) {
   return
 }
 
-let _url, url
+let _url, url, isClone = false
 _url = tplObj[templateName]
-if (~tplObj[templateName].indexOf("://")) url = "direct:" + _url
-else url = _url
+if (~tplObj[templateName].indexOf("://")) {
+  url = "direct:" + _url
+  isClone = true
+} else url = _url
 
 console.log(chalk.white('\n Start generating... \n'))
 // 出现加载图标
@@ -38,6 +40,7 @@ spinner.start();
 download (
   url,
   projectName,
+  { clone: isClone },
   err => {
     if (err) {
       spinner.fail();
