@@ -1,10 +1,14 @@
 #!/usr/bin/env node
 
+const path = require("path");
 const inquirer = require('inquirer')
 const chalk = require('chalk')
 const fs = require('fs')
-const tplObj = require(`${__dirname}/../template`)
-
+// const tplObj = require(`${__dirname}/../template`)
+const tempDir = path.resolve(__dirname, "./../template.json");
+delete require.cache[require.resolve(tempDir)];
+const tplObj = require(tempDir)
+console.log("tplObj_", tplObj)
 let question = [
   {
     name: "name",
@@ -26,7 +30,7 @@ inquirer
     let { name } = answers;
     delete tplObj[name]
     // 更新 template.json 文件
-    fs.writeFile(`${__dirname}/../template.json`, JSON.stringify(tplObj), 'utf-8', err => {
+    fs.writeFile(tempDir, JSON.stringify(tplObj), 'utf-8', err => {
       if (err) console.log(err)
       console.log('\n')
       console.log(chalk.green('Deleted successfully!\n'))
