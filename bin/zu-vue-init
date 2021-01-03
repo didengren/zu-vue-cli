@@ -1,10 +1,14 @@
 #!/usr/bin/env node
 
+const fs = require("fs")
+const path = require("path")
 const program = require('commander')
 const chalk = require('chalk')
 const ora = require('ora')
 const download = require('download-git-repo')
 const tplObj = require(`${__dirname}/../template`)
+const {exec, spawn} = require('child_process')
+const { isDirectory, nonEmptyDir } = require("../utils")
 
 program
   .usage('<template-name> [project-name]')
@@ -32,25 +36,60 @@ if (~tplObj[templateName].indexOf("://")) {
   isClone = true
 } else url = _url
 
-console.log(chalk.white('\n Start generating... \n'))
-// 出现加载图标
-const spinner = ora("Downloading...");
-spinner.start();
-// 执行下载方法并传入参数
-download (
-  url,
-  projectName,
-  { clone: isClone },
-  err => {
-    if (err) {
-      spinner.fail();
-      console.log(chalk.red(`Generation failed. ${err}`))
-      return
+/**
+ * 下载资源 生成代码
+ * @param {Function} success 收尾操作 擦除tempProj目录
+ */
+const generateCode = (dirname, success) => {
+  console.log(chalk.white('\n Start generating... \n'))
+  // 出现加载图标
+  const spinner = ora("Downloading...");
+  spinner.start();
+  // 执行下载方法并传入参数
+  download(
+    url,
+    dirname, {
+      clone: isClone
+    },
+    err => {
+      if (err) {
+        spinner.fail();
+        console.log(chalk.red(`Generation failed. ${err}`))
+        return
+      }
+      // 转移文件到上级目录
+      // 结束加载图标
+      success && success();
+      spinner.succeed();
+      console.log(chalk.green('\n Generation completed!'))
+      console.log('\n To get started')
+      console.log(`\n    cd ${projectName} \n`)
     }
-    // 结束加载图标
-    spinner.succeed();
-    console.log(chalk.green('\n Generation completed!'))
-    console.log('\n To get started')
-    console.log(`\n    cd ${projectName} \n`)
-  }
-)
+  )
+}
+
+// 判断项目文件夹是否存在
+// 不存在，则默认操作
+// 存在，则判断是否为空
+// 为空，则默认操作
+// 不为空，则新建tempProj文件夹
+// 并默认操作到tempProj文件夹
+// 
+// 完成后将tempProj文件夹下的所有内容移动到上级目录
+// 完成后将tempProj文件夹删除
+const projDir = path.join(process.cwd(), projectName)
+if (isDirectory(projDir) && nonEmptyDir(projDir)) {
+  exec(`cd ${projDir}`, function(err) {
+  console.log("jin_", process.cwd())
+    if (err) return console.error(`Mkdir Error: ${new TypeError(err.message)}`);
+    // 新建tempProj文件夹
+    fs.mkdir("./tempProj/", function (err) {
+      if (err) return console.error(`Mkdir Error: ${new TypeError(err.message)}`);
+      generateCode("tempProj", function () {
+        spawn("mv", ["./*", "../"])
+      });
+    })
+  })
+} else {
+  generateCode(projectName);
+}
