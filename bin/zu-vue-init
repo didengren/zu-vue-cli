@@ -1,14 +1,15 @@
 #!/usr/bin/env node
 
-const fs = require("fs")
+const fs = require("fs-extra")
 const path = require("path")
 const program = require('commander')
 const chalk = require('chalk')
 const ora = require('ora')
 const download = require('download-git-repo')
 const tplObj = require(`${__dirname}/../template`)
-const {exec, spawn} = require('child_process')
-const { isDirectory, nonEmptyDir } = require("../utils")
+const { isDirectory, isFile, nonEmptyDir } = require("../utils")
+
+const OFFICIAL_DIR = process.cwd();
 
 program
   .usage('<template-name> [project-name]')
@@ -43,7 +44,7 @@ if (~tplObj[templateName].indexOf("://")) {
 const generateCode = (dirname, success) => {
   console.log(chalk.white('\n Start generating... \n'))
   // 出现加载图标
-  const spinner = ora("Downloading...");
+  const spinner = ora("Downloading... \n");
   spinner.start();
   // 执行下载方法并传入参数
   download(
@@ -57,16 +58,59 @@ const generateCode = (dirname, success) => {
         console.log(chalk.red(`Generation failed. ${err}`))
         return
       }
-      // 转移文件到上级目录
       // 结束加载图标
-      success && success();
       spinner.succeed();
       console.log(chalk.green('\n Generation completed!'))
+      // 转移文件到上级目录
+      success && success();
       console.log('\n To get started')
       console.log(`\n    cd ${projectName} \n`)
     }
   )
 }
+
+const mvCode = (tempDirName) => {
+  const PROJ_BASE = process.cwd();
+  const TEMP_BASE = path.join(PROJ_BASE, tempDirName)
+
+  try {
+    recursiveMoveFlow(PROJ_BASE, TEMP_BASE, path.resolve(TEMP_BASE, "./"))
+    
+    fs.removeSync(TEMP_BASE)
+    
+    console.log(chalk.green("\n Destroy empty directory completed!"))
+  } catch (error) {
+    console.error("MvCode Error: %s", error.message)
+  }
+}
+
+const recursiveMoveFlow = (proj, temp, sourceDir) => {
+  const sourcePathArr = fs.readdirSync(sourceDir).map((item) => path.join(sourceDir, item))
+
+  if (sourcePathArr.length > 0) {
+    sourcePathArr.forEach((filePath, i) => {
+      if (isDirectory(filePath) && nonEmptyDir(filePath)) {
+        recursiveMoveFlow(proj, temp, filePath)
+      } else {
+        const destPath = filePath.replace(temp, proj)
+        // console.log("%s\n%s", filePath, destPath)
+        // console.log("--------------------------------------------------------------------------------")
+
+        const { dirLike, err } = getDirFromFilePath(filePath)
+        if (!err) {
+          fs.mkdirSync(dirLike.replace(temp, proj), { recursive: true })
+        
+          // const readStream = fs.createReadStream(filePath, { encoding: "utf8" });
+          // const writeStream = fs.createWriteStream(destPath);
+          // const ws = readStream.pipe(writeStream);
+          if(fs.existsSync(filePath)) fs.moveSync(filePath, destPath, { overwrite: true })
+        }
+      }
+    })
+  }
+}
+
+const getDirFromFilePath = (filePath) => isDirectory(filePath) ? { dirLike: filePath, err: false } : isFile(filePath) ? { dirLike: path.resolve(filePath, "../"), err: false } : { dirLike: null, err: true }
 
 // 判断项目文件夹是否存在
 // 不存在，则默认操作
@@ -77,18 +121,16 @@ const generateCode = (dirname, success) => {
 // 
 // 完成后将tempProj文件夹下的所有内容移动到上级目录
 // 完成后将tempProj文件夹删除
-const projDir = path.join(process.cwd(), projectName)
+const projDir = path.join(OFFICIAL_DIR, projectName)
 if (isDirectory(projDir) && nonEmptyDir(projDir)) {
-  exec(`cd ${projDir}`, function(err) {
-  console.log("jin_", process.cwd())
-    if (err) return console.error(`Mkdir Error: ${new TypeError(err.message)}`);
-    // 新建tempProj文件夹
-    fs.mkdir("./tempProj/", function (err) {
-      if (err) return console.error(`Mkdir Error: ${new TypeError(err.message)}`);
-      generateCode("tempProj", function () {
-        spawn("mv", ["./*", "../"])
-      });
-    })
+  process.chdir(projDir)
+  // 新建tempProj文件夹
+  const tempDirName = projectName;
+  fs.mkdir(`./${tempDirName}/`, function (err) {
+    if (err) return console.error(`Mkdir Error: ${err.message}`);
+    generateCode(tempDirName, function () {
+      mvCode(tempDirName)
+    });
   })
 } else {
   generateCode(projectName);
